@@ -3,16 +3,7 @@ import { SidebarGroup } from "../ui/sidebar";
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";
-
-const links = [
-  { href: "/dashboard/overview", label: "Overview", segment: "overview" },
-  {
-    href: "/dashboard/manage-projects",
-    label: "Manage Projects",
-    segment: "manage-projects",
-  },
-  { href: "/dashboard/settings", label: "Settings", segment: "settings" },
-];
+import { navLinks } from "@/lib/links";
 
 export default function PagesNavigator() {
   const pathname = usePathname();
@@ -20,12 +11,13 @@ export default function PagesNavigator() {
   return (
     <SidebarGroup>
       <ul className="flex flex-col gap-2">
-        {links.map(({ href, label, segment }) => (
+        {navLinks.map(({ href, label, segment, icon: Icon }) => (
           <li key={segment}>
             <Link
-              className={currentPath === segment ? "active" : ""}
+              className={`${currentPath === segment ? "active" : ""} flex items-center gap-2 text-md `}
               href={href}
             >
+              <Icon className="w-4 h-4 mr-2" />
               {label}
             </Link>
           </li>

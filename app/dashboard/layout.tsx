@@ -2,6 +2,7 @@ import Navbar from "@/components/navbar/Navbar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar/Sidebar";
 import "./layout.css";
+import MobileNav from "@/components/mobileNav/MobileNav";
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
@@ -14,6 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </section>
       </main>
+      <MobileNav />
     </SidebarProvider>
   );
 }
