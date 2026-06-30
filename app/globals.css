@@ -109,7 +109,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-main);
+    font-family: var(--font-hanken-grotesk);
   }
 
   /* 
@@ -135,5 +135,13 @@ input:focus {
   outline: none;
 }
 a {
-  font-family: var(--font-s);
+  font-family: var(--font-hanken-grotesk);
+}
+
+code,
+pre {
+  font-family: var(--font-jetbrains-mono);
+}
+* {
+  border-color: hsl(var(--border));
 }
