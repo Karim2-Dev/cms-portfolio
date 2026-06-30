@@ -3,8 +3,9 @@ import { Hanken_Grotesk, JetBrains_Mono, Geist } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
+import ModeToggle from "@/components/DarkModeSwitcher";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const hankenGrotesk = Hanken_Grotesk({
   variable: "--font-hanken-grotesk",
@@ -29,10 +30,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", hankenGrotesk.variable, jetbrainsMono.variable, "font-sans", geist.variable)}
+      className={cn(
+        "h-full",
+        "antialiased",
+        hankenGrotesk.variable,
+        jetbrainsMono.variable,
+        "font-sans",
+        geist.variable,
+      )}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="relative min-h-full flex flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -40,6 +48,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <ModeToggle />
         </ThemeProvider>
       </body>
     </html>
