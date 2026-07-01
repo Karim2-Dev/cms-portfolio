@@ -5,7 +5,9 @@
   transition: 0.2s;
 }
 .sidebar ul li a:hover,
-.sidebar ul li a.active {
+.sidebar ul li a.active,
+.mobile-nav a:hover,
+.mobile-nav a.active {
   border-right-color: hsl(var(--primary));
   color: hsl(var(--primary));
 }
