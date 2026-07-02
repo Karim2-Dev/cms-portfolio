@@ -9,6 +9,7 @@ export interface Project {
   github_url?: string;
   is_featured: boolean;
   created_at: string;
+  tags?: string[];
 }
 
 // شكل الـ response الموحّد لعمليات الكتابة (add/edit/delete)

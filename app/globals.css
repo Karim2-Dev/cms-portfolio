@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --surface: 100 10% 99%;
   --background: 248 14% 97%;
   --foreground: 210 14% 11%;
 
@@ -37,6 +38,7 @@
 }
 
 .dark {
+  --surface: 0 0% 7%;
   --background: 0 0% 2%;
   --foreground: 0 0% 100%;
 
@@ -67,6 +69,7 @@
 }
 
 @theme inline {
+  --color-surface: hsl(var(--surface));
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-primary: hsl(var(--primary));
