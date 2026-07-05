@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+"use client";
 import { IoClose } from "react-icons/io5";
 import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
@@ -11,9 +13,10 @@ import {
   InputGroupText,
 } from "@/components/ui/input-group";
 import { InfoIcon } from "lucide-react";
-import { Button } from "../ui/button";
-import { HiPlus } from "react-icons/hi2";
-import { MdOutlineCloudUpload } from "react-icons/md";
+import AddThumbnail from "./AddThumbnail";
+import { useEffect, useState } from "react";
+import ImagePreview from "./ImagePreview";
+import { ProjectFormData } from "@/src/types/tProjects";
 
 export default function ProjectForm({
   isOpen,
@@ -22,13 +25,35 @@ export default function ProjectForm({
   isOpen: boolean;
   setIsOpne: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const [image, setImage] = useState<File | null>(null);
+  const [project, setProject] = useState<Partial<ProjectFormData>>();
+
+  // Handles
+  const handleSaveBtn = () => {};
+
+  function handleOnChangeInput<K extends keyof ProjectFormData>(
+    key: K,
+    value: ProjectFormData[K],
+  ) {
+    setProject((prev) => ({ ...prev, [key]: value }));
+  }
+  //UseEffects
+  useEffect(() => {
+    if (!image) {
+      handleOnChangeInput("thumbnail", "");
+      return;
+    }
+
+    const url = URL.createObjectURL(image);
+    handleOnChangeInput("thumbnail", url);
+    return () => URL.revokeObjectURL(url);
+  }, [image]);
   return (
     <div
       className={`project-form py-5 px-3 w-full h-full flex items-center justify-center backdrop-blur-sm fixed top-0 left-0 z-100
           ${isOpen ? "opacity-100 pointer-events-auto translate-0" : "opacity-0 pointer-events-none translate-3.5"}`}
       onClick={() => setIsOpen(false)}
     >
-      {/* 1. تحديد ارتفاع أقصى للكونتينر واستخدام Flexbox لإدارة العناصر بالداخل */}
       <div
         className="relative container bg-surface w-100 border border-border rounded-lg md:w-185 max-h-[85vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
@@ -55,6 +80,7 @@ export default function ProjectForm({
             <Field>
               <FieldLabel htmlFor="title">Project Title</FieldLabel>
               <Input
+                onChange={(e) => handleOnChangeInput("title", e.target.value)}
                 id="title"
                 autoComplete="off"
                 placeholder="e.g., Quantum Portflio v2.0"
@@ -63,6 +89,9 @@ export default function ProjectForm({
             <Field>
               <FieldLabel htmlFor="description">Description</FieldLabel>
               <Textarea
+                onChange={(e) =>
+                  handleOnChangeInput("description", e.target.value)
+                }
                 minLength={3}
                 maxLength={1000}
                 id="description"
@@ -72,6 +101,7 @@ export default function ProjectForm({
             </Field>
             <Field>
               <InputTags
+                onChange={(tags) => handleOnChangeInput("tags", tags)}
                 className="w-full"
                 isRequired
                 label="Technologies"
@@ -83,7 +113,16 @@ export default function ProjectForm({
               <Field>
                 <FieldLabel htmlFor="project-url">Project URL</FieldLabel>
                 <InputGroup>
-                  <InputGroupInput id="project-url" placeholder="example.com" />
+                  <InputGroupInput
+                    id="project-url"
+                    placeholder="example.com"
+                    onChange={(e) =>
+                      handleOnChangeInput(
+                        "live_url",
+                        "https://" + e.target.value,
+                      )
+                    }
+                  />
                   <InputGroupAddon>
                     <InputGroupText>https://</InputGroupText>
                   </InputGroupAddon>
@@ -95,7 +134,16 @@ export default function ProjectForm({
               <Field>
                 <FieldLabel htmlFor="github-url">GitHub URL</FieldLabel>
                 <InputGroup>
-                  <InputGroupInput id="github-url" placeholder="example.com" />
+                  <InputGroupInput
+                    onChange={(e) =>
+                      handleOnChangeInput(
+                        "github_url",
+                        "https://" + e.target.value,
+                      )
+                    }
+                    id="github-url"
+                    placeholder="example.com"
+                  />
                   <InputGroupAddon>
                     <InputGroupText>https://</InputGroupText>
                   </InputGroupAddon>
@@ -106,17 +154,13 @@ export default function ProjectForm({
               </Field>
             </div>
 
-            <div className="relative cursor-pointer project-card border-2 border-dashed select-none !border-primary/30 cursor-pointer hover:!border-primary h-50 w-full rounded-md transition-colors">
-              <div className="container h-full flex flex-col items-center justify-center gap-2 px-3">
-                <MdOutlineCloudUpload className="w-12 h-12 text-primary p-2 rounded-full bg-primary/20" />
-                <h2>Click to upload or drag and drop</h2>
-                <p>PNG,JPG, or WEBP up To 5MB</p>
-                <input
-                  type="file"
-                  className="absolute h-full opacity-0 w-full "
-                />
-              </div>
-            </div>
+            {image === null ? (
+              <AddThumbnail setImage={setImage} />
+            ) : (
+              <ImagePreview
+                img={project?.thumbnail ? project?.thumbnail : ""}
+              />
+            )}
           </FieldGroup>
         </div>
 

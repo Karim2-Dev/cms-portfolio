@@ -46,3 +46,7 @@ export interface ProjectStore {
   // Delete
   deleteProject: (projectId: string) => Promise<CrudResult>;
 }
+export type ProjectFormData = Omit<
+  Project,
+  "id" | "slug" | "content" | "created_at" | "is_featured"
+>;

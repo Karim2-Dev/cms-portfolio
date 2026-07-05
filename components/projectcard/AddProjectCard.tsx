@@ -7,12 +7,9 @@ export default function AddProjectCard() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  });
+    document.body.style.overflow = isOpen ? "auto" : "hidden";
+  }, [isOpen]);
+
   return (
     <div>
       <div
@@ -29,7 +26,8 @@ export default function AddProjectCard() {
           </p>
         </div>
       </div>
-      {isOpen && <ProjectForm isOpen={isOpen} setIsOpne={setIsOpen} />}
+
+      <ProjectForm isOpen={isOpen} setIsOpne={setIsOpen} />
     </div>
   );
 }
