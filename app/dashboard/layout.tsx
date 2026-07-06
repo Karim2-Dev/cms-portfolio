@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="relative w-full ">
+      <main className="relative flex-1 min-w-0 flex flex-col">
         <Navbar />
 
         <section className="pt-17 pb-17">{children}</section>

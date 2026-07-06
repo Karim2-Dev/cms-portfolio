@@ -5,6 +5,7 @@ import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { InputTags } from "@/components/base/input/input-tags";
+import { useAdminStore } from "@/src/store/projectsStore";
 
 import {
   InputGroup,
@@ -20,16 +21,51 @@ import { ProjectFormData } from "@/src/types/tProjects";
 
 export default function ProjectForm({
   isOpen,
-  setIsOpne: setIsOpen,
+  setIsOpen: setIsOpen,
 }: {
   isOpen: boolean;
-  setIsOpne: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [image, setImage] = useState<File | null>(null);
-  const [project, setProject] = useState<Partial<ProjectFormData>>();
+  const [project, setProject] = useState<Partial<ProjectFormData>>({});
+  const { addProject } = useAdminStore();
 
   // Handles
-  const handleSaveBtn = () => {};
+  const handleCancelBtn = () => {
+    setProject({});
+    setIsOpen(false);
+    setImage(null);
+  };
+
+  async function handleSaveBtn() {
+    if (!project?.title || project.title.trim() === "") {
+      return;
+    }
+    const slug = project.title
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]+/g, "");
+
+    const result = await addProject(
+      {
+        title: project.title,
+        slug,
+        description: project.description,
+        live_url: project.live_url,
+        github_url: project.github_url,
+        is_featured: false,
+        tags: project.tags,
+      },
+      image,
+    );
+    if (result.success) {
+      handleCancelBtn();
+    } else {
+      console.error(result.error);
+      // ممكن تعرض toast/error state هنا لاحقًا
+    }
+  }
 
   function handleOnChangeInput<K extends keyof ProjectFormData>(
     key: K,
@@ -80,6 +116,7 @@ export default function ProjectForm({
             <Field>
               <FieldLabel htmlFor="title">Project Title</FieldLabel>
               <Input
+                value={project?.title ?? ""}
                 onChange={(e) => handleOnChangeInput("title", e.target.value)}
                 id="title"
                 autoComplete="off"
@@ -93,6 +130,7 @@ export default function ProjectForm({
                   handleOnChangeInput("description", e.target.value)
                 }
                 minLength={3}
+                value={project?.description ?? ""}
                 maxLength={1000}
                 id="description"
                 autoComplete="off"
@@ -103,6 +141,7 @@ export default function ProjectForm({
               <InputTags
                 onChange={(tags) => handleOnChangeInput("tags", tags)}
                 className="w-full"
+                value={project?.tags ?? []}
                 isRequired
                 label="Technologies"
                 placeholder="e.g., React, Node.js, Tailwind CSS"
@@ -115,12 +154,10 @@ export default function ProjectForm({
                 <InputGroup>
                   <InputGroupInput
                     id="project-url"
+                    value={project?.live_url ?? ""}
                     placeholder="example.com"
                     onChange={(e) =>
-                      handleOnChangeInput(
-                        "live_url",
-                        "https://" + e.target.value,
-                      )
+                      handleOnChangeInput("live_url", e.target.value)
                     }
                   />
                   <InputGroupAddon>
@@ -136,13 +173,11 @@ export default function ProjectForm({
                 <InputGroup>
                   <InputGroupInput
                     onChange={(e) =>
-                      handleOnChangeInput(
-                        "github_url",
-                        "https://" + e.target.value,
-                      )
+                      handleOnChangeInput("github_url", e.target.value)
                     }
                     id="github-url"
                     placeholder="example.com"
+                    value={project?.github_url ?? ""}
                   />
                   <InputGroupAddon>
                     <InputGroupText>https://</InputGroupText>
@@ -168,13 +203,13 @@ export default function ProjectForm({
           dir="rtl"
           className="text-md bottom border-t bg-surface py-5 px-3 w-full absolute left-0 bottom-0 flex items-center gap-5 flex-shrink-0 z-10"
         >
-          <button className="text-white dark:text-gray-900 btn bg-primary transition-transform py-1 px-4 rounded-md cursor-pointer scale-100 hover:scale-95">
+          <button
+            onClick={handleSaveBtn}
+            className="text-white dark:text-gray-900 btn bg-primary transition-transform py-1 px-4 rounded-md cursor-pointer scale-100 hover:scale-95"
+          >
             Save Project
           </button>
-          <button
-            className="btn cursor-pointer"
-            onClick={() => setIsOpen(false)}
-          >
+          <button className="btn cursor-pointer" onClick={handleCancelBtn}>
             Cancel
           </button>
         </div>

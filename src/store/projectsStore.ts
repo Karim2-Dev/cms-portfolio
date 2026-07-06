@@ -4,10 +4,13 @@ import { Project, ProjectStore } from "@/src/types/tProjects";
 
 // Helper بيستخرج رسالة الخطأ بشكل آمن من غير any
 function getErrorMessage(err: unknown): string {
+  // 👈 هذا السطر سيقوم بتحويل الـ Object بالكامل إلى نص مقروء مهما كانت تركيبته
+  console.error("🔴 تفاصيل الخطأ الحقيقية:", JSON.stringify(err, null, 2));
+  console.log("🔴 كائن الخطأ كـ Log عادي:", err);
+
   if (err instanceof Error) return err.message;
   return "حصل خطأ غير متوقع";
 }
-
 export const useAdminStore = create<ProjectStore>((set, get) => ({
   projects: [],
   isLoading: false,
