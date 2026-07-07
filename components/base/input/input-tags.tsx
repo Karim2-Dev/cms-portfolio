@@ -348,7 +348,22 @@ export const InputTags = ({
                   value={inputValue}
                   disabled={isDisabled}
                   placeholder={isEmpty ? placeholder : undefined}
-                  onChange={(e) => setInputValue(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val.endsWith(" ") || val.endsWith(" ")) {
+                      const trimmed = val.trim();
+                      if (trimmed !== "") {
+                        if (addTag(trimmed)) {
+                          setInputValue("");
+                          return;
+                        }
+                      } else {
+                        setInputValue("");
+                        return;
+                      }
+                    }
+                    setInputValue(val);
+                  }}
                   onKeyDown={handleInputKeyDown}
                   // ✅ نفس base text/placeholder styles بتاع shadcn Input
                   className="w-full flex-[1_0_0] appearance-none bg-transparent text-base text-foreground caret-foreground outline-none placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed md:text-sm"
