@@ -204,9 +204,12 @@ export const InputTags = ({
 
     switch (event.key) {
       case "Enter":
+      case " ":
         event.preventDefault();
-        if (addTag(inputValue)) {
-          setInputValue("");
+        if (inputValue.trim() !== "") {
+          if (addTag(inputValue)) {
+            setInputValue("");
+          }
         }
         break;
       case "Backspace":
