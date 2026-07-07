@@ -30,7 +30,7 @@ export default function AddProjectCard() {
         </div>
       </div>
 
-      <ProjectForm isOpen={isOpen} setIsOpen={setIsOpen} />
+      <ProjectForm mode="add" isOpen={isOpen} setIsOpen={setIsOpen} />
     </div>
   );
 }

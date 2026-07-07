@@ -116,11 +116,14 @@ export const useAdminStore = create<ProjectStore>((set, get) => ({
   deleteProject: async (projectId) => {
     set({ isLoading: true, error: null });
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("projects")
         .delete()
         .eq("id", projectId);
 
+      console.log("projectId:", projectId);
+      console.log("data:", data);
+      console.log("error:", error);
       if (error) throw error;
 
       set((state) => ({

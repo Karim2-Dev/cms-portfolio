@@ -3,58 +3,16 @@ import HeadingPage from "@/components/HeadingPage";
 import AddProjectCard from "@/components/projectcard/AddProjectCard";
 import ProjectCard from "@/components/projectcard/ProjectCard";
 
-import { supabase } from "@/src/lib/supabaseClient";
-import { Project } from "@/src/types/tProjects";
-import { useEffect, useState } from "react";
+import { useAdminStore } from "@/src/store/projectsStore";
+import { useEffect } from "react";
 
 export default function Page() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { projects, fetchProjects } = useAdminStore();
 
   useEffect(() => {
-    async function getProjects() {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false });
+    fetchProjects();
+  }, [fetchProjects]);
 
-      if (error) {
-        setError(error.message);
-        return;
-      }
-
-      setProjects(data);
-    }
-
-    getProjects();
-  }, []);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("projects")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "projects",
-        },
-        async () => {
-          const { data } = await supabase
-            .from("projects")
-            .select("*")
-            .order("created_at", { ascending: false });
-
-          setProjects(data ?? []);
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-  if (error) return <div>Error: {error}</div>;
   return (
     <div className=" ">
       <div className="container py-5 px-3 md:px-10  ">

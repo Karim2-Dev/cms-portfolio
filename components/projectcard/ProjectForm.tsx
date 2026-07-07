@@ -13,22 +13,24 @@ import {
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, Loader2Icon } from "lucide-react";
 import AddThumbnail from "./AddThumbnail";
 import { useEffect, useState } from "react";
 import ImagePreview from "./ImagePreview";
 import { ProjectFormData } from "@/src/types/tProjects";
+import { ProjectFormProps } from "@/src/types/tsProjectForm";
 
 export default function ProjectForm({
   isOpen,
   setIsOpen: setIsOpen,
-}: {
-  isOpen: boolean;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+  initialData,
+  mode,
+}: ProjectFormProps) {
   const [image, setImage] = useState<File | null>(null);
-  const [project, setProject] = useState<Partial<ProjectFormData>>({});
-  const { addProject } = useAdminStore();
+  const [project, setProject] = useState<Partial<ProjectFormData>>(
+    initialData ?? {},
+  );
+  const { addProject, editProject: editProjectStore, isLoading } = useAdminStore();
 
   // Handles
   const handleCancelBtn = () => {
@@ -36,8 +38,11 @@ export default function ProjectForm({
     setIsOpen(false);
     setImage(null);
   };
-
-  async function handleSaveBtn() {
+  const handleRemoveImage = () => {
+    setImage(null);
+    setProject((prev) => ({ ...prev, thumbnail: "" }));
+  };
+  async function addNewProject() {
     if (!project?.title || project.title.trim() === "") {
       return;
     }
@@ -66,6 +71,42 @@ export default function ProjectForm({
       // ممكن تعرض toast/error state هنا لاحقًا
     }
   }
+  async function editProject() {
+    if (!project?.title || project.title.trim() === "") return;
+    const slug = project.title
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w-]+/g, "");
+
+    const result = await editProjectStore(
+      {
+        title: project.title,
+        slug,
+        description: project.description,
+        live_url: project.live_url,
+        github_url: project.github_url,
+        is_featured: initialData?.is_featured ?? false,
+        tags: project.tags,
+      },
+      image,
+      initialData?.id ?? "",
+    );
+    if (result.success) {
+      handleCancelBtn();
+    } else {
+      console.error(result.error);
+      // ممكن تعرض toast/error state هنا لاحقًا
+    }
+  }
+
+  async function handleSaveBtn() {
+    if (mode === "add") {
+      addNewProject();
+    } else if (mode === "edit") {
+      editProject();
+    }
+  }
 
   function handleOnChangeInput<K extends keyof ProjectFormData>(
     key: K,
@@ -75,14 +116,18 @@ export default function ProjectForm({
   }
   //UseEffects
   useEffect(() => {
-    if (!image) {
-      handleOnChangeInput("thumbnail", "");
-      return;
+    if (isOpen) {
+      setProject(initialData ?? {});
+      setImage(null);
     }
+  }, [isOpen, initialData]);
 
-    const url = URL.createObjectURL(image);
-    handleOnChangeInput("thumbnail", url);
-    return () => URL.revokeObjectURL(url);
+  useEffect(() => {
+    if (image) {
+      const url = URL.createObjectURL(image);
+      handleOnChangeInput("thumbnail", url);
+      return () => URL.revokeObjectURL(url);
+    }
   }, [image]);
   return (
     <div
@@ -98,7 +143,11 @@ export default function ProjectForm({
         <div className="header w-full flex-shrink-0">
           <div className="py-5 px-3 border-b border-border flex items-center justify-between">
             <div className="flex flex-col gap-1">
-              <h2 className="text-2xl">Add New Project</h2>
+              {mode === "add" ? (
+                <h2 className="text-2xl">Add New Project</h2>
+              ) : (
+                <h2 className="text-2xl">Edit Project</h2>
+              )}
               <p>Enter the details of your latest work.</p>
             </div>
 
@@ -189,12 +238,13 @@ export default function ProjectForm({
               </Field>
             </div>
 
-            {image === null ? (
-              <AddThumbnail setImage={setImage} />
-            ) : (
+            {project?.thumbnail ? (
               <ImagePreview
-                img={project?.thumbnail ? project?.thumbnail : ""}
+                img={project.thumbnail}
+                onRemove={handleRemoveImage}
               />
+            ) : (
+              <AddThumbnail setImage={setImage} />
             )}
           </FieldGroup>
         </div>
@@ -205,8 +255,10 @@ export default function ProjectForm({
         >
           <button
             onClick={handleSaveBtn}
-            className="text-white dark:text-gray-900 btn bg-primary transition-transform py-1 px-4 rounded-md cursor-pointer scale-100 hover:scale-95"
+            disabled={isLoading}
+            className="text-white dark:text-gray-900 btn bg-primary transition-transform py-1.5 px-4 rounded-md cursor-pointer scale-100 hover:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
           >
+            {isLoading && <Loader2Icon className="w-4 h-4 animate-spin" />}
             Save Project
           </button>
           <button className="btn cursor-pointer" onClick={handleCancelBtn}>

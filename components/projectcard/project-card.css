@@ -1,8 +1,8 @@
-.project-card button svg {
+.project-card .view-project button svg {
   position: relative;
   right: 0;
   transition: right 0.3s ease;
 }
-.project-card button:hover svg {
+.project-card .view-project button:hover svg {
   right: -5px;
 }
