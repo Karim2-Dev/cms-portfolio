@@ -1,3 +1,9 @@
+import HeadingPage from "@/components/HeadingPage";
+
 export default function page() {
-  return <div>settings</div>;
+  return (
+    <div className="settings">
+      <HeadingPage title="settings" subtitle="" />
+    </div>
+  );
 }

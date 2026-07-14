@@ -1,4 +1,3 @@
-import { HiMiniPlusSmall } from "react-icons/hi2";
 import {
   Sidebar,
   SidebarContent,
@@ -7,8 +6,8 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import PagesNavigator from "./PagesNavigator";
-import { IoLogOutOutline } from "react-icons/io5";
 import AddProjectBtn from "./AddProjectBtn";
+import Logout from "./Logout";
 
 export function AppSidebar() {
   return (
@@ -32,10 +31,7 @@ export function AppSidebar() {
             <AddProjectBtn />
 
             <div className="border-t border-border pt-2">
-              <button className=" w-full text-start text-sm font-medium rounded-md cursor-pointer text-destructive hover:bg-destructive/10 py-1.5 px-5 transition-colors flex items-center gap-2">
-                <IoLogOutOutline className="w-5 h-5 shrink-0" />
-                Logout
-              </button>
+              <Logout />
             </div>
           </SidebarGroup>
         </SidebarFooter>
