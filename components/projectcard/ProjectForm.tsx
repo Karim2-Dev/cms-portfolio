@@ -30,7 +30,11 @@ export default function ProjectForm({
   const [project, setProject] = useState<Partial<ProjectFormData>>(
     initialData ?? {},
   );
-  const { addProject, editProject: editProjectStore, isLoading } = useAdminStore();
+  const {
+    addProject,
+    editProject: editProjectStore,
+    isLoading,
+  } = useAdminStore();
 
   // Handles
   const handleCancelBtn = () => {
@@ -57,8 +61,8 @@ export default function ProjectForm({
         title: project.title,
         slug,
         description: project.description,
-        live_url: project.live_url,
-        github_url: project.github_url,
+        live_url: `https://${project.live_url}`,
+        github_url: `https://${project.github_url}`,
         is_featured: false,
         tags: project.tags,
       },
@@ -84,8 +88,8 @@ export default function ProjectForm({
         title: project.title,
         slug,
         description: project.description,
-        live_url: project.live_url,
-        github_url: project.github_url,
+        live_url: `https://${project.live_url}`,
+        github_url: `https://${project.github_url}`,
         is_featured: initialData?.is_featured ?? false,
         tags: project.tags,
       },
