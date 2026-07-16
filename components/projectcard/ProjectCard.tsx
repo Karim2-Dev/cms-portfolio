@@ -70,10 +70,15 @@ export default function ProjectCard({ data }: { data: Project }) {
 
           {/* زر الـ Link */}
           <div className="view-project pt-3 border-t border-border">
-            <button className="relative text-md text-primary cursor-pointer font-semibold hover:text-primary/80 transition-all flex items-center gap-1 group">
+            <a
+              href={data.live_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative text-md text-primary cursor-pointer font-semibold hover:text-primary/80 transition-all flex items-center gap-1 group"
+            >
               View Project
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </button>
+            </a>
           </div>
         </div>
       </div>

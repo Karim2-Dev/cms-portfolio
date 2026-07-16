@@ -14,7 +14,7 @@ export default function Page() {
   }, [fetchProjects]);
 
   return (
-    <div className=" ">
+    <div className="over-view">
       <div className="container py-5 px-3 md:px-10  ">
         <HeadingPage
           title="overview"

@@ -5,10 +5,7 @@ const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)"]);
 
 const isAdminRoute = createRouteMatcher(["/dashboard(.*)"]);
 export default clerkMiddleware(async (auth, request) => {
-  const { sessionClaims, userId } = await auth();
-  console.log("USER ID:", userId);
-  console.log("CLAIMS:", JSON.stringify(sessionClaims, null, 2));
-
+  const { sessionClaims } = await auth();
   if (!isPublicRoute(request)) {
     await auth.protect();
   }

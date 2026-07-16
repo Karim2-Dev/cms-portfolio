@@ -1,9 +1,16 @@
 import HeadingPage from "@/components/HeadingPage";
+import ProfileInfo from "./components/profileInfo";
 
 export default function page() {
   return (
     <div className="settings">
-      <HeadingPage title="settings" subtitle="" />
+      <div className="container py-5 px-3 md:px-10 flex flex-col gap-5">
+        <HeadingPage
+          title="settings"
+          subtitle="Manage your account preferences, security settings, and dashboard configurations."
+        />
+        <ProfileInfo />
+      </div>
     </div>
   );
 }
