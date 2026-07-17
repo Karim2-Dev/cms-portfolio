@@ -1,5 +1,5 @@
 import HeadingPage from "@/components/HeadingPage";
-import ProfileInfo from "./components/profileInfo";
+import ProfileForm from "./components/ProfileForm";
 
 export default function page() {
   return (
@@ -9,7 +9,7 @@ export default function page() {
           title="settings"
           subtitle="Manage your account preferences, security settings, and dashboard configurations."
         />
-        <ProfileInfo />
+        <ProfileForm />
       </div>
     </div>
   );
