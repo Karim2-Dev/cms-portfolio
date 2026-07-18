@@ -1,6 +1,7 @@
 import HeadingPage from "@/components/HeadingPage";
 import ProfileForm from "./components/ProfileForm";
 import DashboardPreferences from "./components/DashboardPreferences";
+import Logout from "@/components/Logout";
 
 export default function page() {
   return (
@@ -13,6 +14,7 @@ export default function page() {
 
         <ProfileForm />
         <DashboardPreferences />
+        <Logout size="fit" />
       </div>
     </div>
   );

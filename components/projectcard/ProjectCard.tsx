@@ -4,9 +4,9 @@ import Tag from "./Tag";
 import { ArrowRight } from "lucide-react";
 import "./project-card.css";
 import { Project } from "@/src/types/tProjects";
-import { AlertDialogDestructive } from "./DeleteProject";
 import { useState } from "react";
 import ProjectForm from "./ProjectForm";
+import DeleteProject from "./DeleteProject";
 
 export default function ProjectCard({ data }: { data: Project }) {
   const [isOpenEditForm, setIsOpenEditForm] = useState<boolean>(false);
@@ -49,7 +49,7 @@ export default function ProjectCard({ data }: { data: Project }) {
                 <MdOutlineEdit className="w-5 h-5 cursor-pointer transition-colors " />
               </button>
 
-              <AlertDialogDestructive id={data.id} />
+              <DeleteProject id={data.id} />
             </div>
           </div>
 

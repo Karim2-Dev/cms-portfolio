@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import PagesNavigator from "./PagesNavigator";
 import AddProjectBtn from "./AddProjectBtn";
-import Logout from "./Logout";
+import Logout from "../Logout";
 
 export function AppSidebar() {
   return (

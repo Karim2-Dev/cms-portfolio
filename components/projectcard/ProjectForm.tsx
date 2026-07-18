@@ -135,12 +135,25 @@ export default function ProjectForm({
   }, [image]);
   return (
     <div
-      className={`project-form py-5 px-3 w-full h-full flex items-center justify-center backdrop-blur-sm fixed top-0 left-0 z-100
-          ${isOpen ? "opacity-100 pointer-events-auto translate-0" : "opacity-0 pointer-events-none translate-3.5"}`}
-      onClick={() => setIsOpen(false)}
+      className={`fixed inset-0 z-100 flex items-center justify-center py-5 px-3
+        ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
     >
+      {/* Backdrop - عنصر منفصل، أنيميشن fade بس */}
       <div
-        className="relative container bg-surface w-100 border border-border rounded-lg md:w-185 max-h-[85vh] flex flex-col"
+        onClick={() => setIsOpen(false)}
+        className={`absolute inset-0 backdrop-blur-sm transition-opacity duration-300 ease-out
+          ${isOpen ? "opacity-100" : "opacity-0"}`}
+      />
+
+      {/* Modal - عنصر منفصل، أنيميشن دخول حقيقي (scale + translate + opacity) */}
+      <div
+        className={`relative container bg-surface w-100 border border-border rounded-lg md:w-185 max-h-[85vh] flex flex-col
+          transition-all duration-300 ease-out
+          ${
+            isOpen
+              ? "opacity-100 scale-100 translate-y-0"
+              : "opacity-0 scale-95 translate-y-4 pointer-events-none"
+          }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header - ثابت فوق */}
