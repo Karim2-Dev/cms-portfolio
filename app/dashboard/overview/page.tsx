@@ -15,7 +15,7 @@ export default function Page() {
 
   return (
     <div className="over-view">
-      <div className="container py-5 px-3 md:px-10  ">
+      <div className="container mx-auto py-5 px-3 md:px-10  ">
         <HeadingPage
           title="overview"
           subtitle="Manage your digital showcase and track project performance."

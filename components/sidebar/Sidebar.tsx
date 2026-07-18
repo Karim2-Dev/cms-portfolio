@@ -11,7 +11,7 @@ import Logout from "./Logout";
 
 export function AppSidebar() {
   return (
-    <div className="hidden md:block bg-surface">
+    <div className="hidden md:block bg-surface ">
       <Sidebar className="pt-5 px-2 sidebar ">
         <SidebarHeader>
           <div>

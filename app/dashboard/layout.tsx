@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="relative flex-1 min-w-0 flex flex-col">
         <Navbar />
 
-        <section className="pt-17 pb-17">{children}</section>
+        <section className="pt-17 pb-17 ">{children}</section>
       </main>
       <MobileNav />
     </SidebarProvider>

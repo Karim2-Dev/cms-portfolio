@@ -13,7 +13,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import { LuUser } from "react-icons/lu";
 import { useState } from "react";
 import ImageProfile from "./ImageProfile";
@@ -23,6 +23,7 @@ import { useForm } from "react-hook-form";
 import { ProfileFormData, profileSchema } from "@/lib/schemas/profile-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ErrorMsg from "./ErrorMsg";
+import { AlertDestructive } from "@/components/ErrorAlert";
 
 export default function ProfileForm() {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
@@ -82,11 +83,17 @@ export default function ProfileForm() {
       setIsSubmitting(false);
     }
   };
+  const hasErrors = !!(
+    errors.fullName ||
+    errors.newPassword ||
+    errors.email ||
+    errors.currentPassword
+  );
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="border border-border rounded-lg p-5 bg-card transition-all duration-200 ease-in-out"
+      className="border border-border w-full rounded-lg p-5 bg-card transition-all duration-200 ease-in-out"
     >
       <div className="heading flex justify-between items-center gap-2">
         <div className="left-side">
@@ -236,14 +243,26 @@ export default function ProfileForm() {
                 >
                   Reset Changes
                 </Button>
-                <Button type="submit" className="cursor-pointer">
-                  Save Changes
+                <Button
+                  type="submit"
+                  className="cursor-pointer transition-all duration-200 ease-in-out"
+                  disabled={isSubmitting || hasErrors}
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    "Save Changes"
+                  )}
                 </Button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {serverError && (
+        <AlertDestructive title="Error" description={serverError} />
+      )}
     </form>
   );
 }
