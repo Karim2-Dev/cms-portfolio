@@ -61,8 +61,8 @@ export default function ProjectForm({
         title: project.title,
         slug,
         description: project.description,
-        live_url: `https://${project.live_url}`,
-        github_url: `https://${project.github_url}`,
+        live_url: `https://${project.live_url?.replace(/^https?:\/\//, "") ?? ""}`,
+        github_url: `https://${project.github_url?.replace(/^https?:\/\//, "") ?? ""}`,
         is_featured: false,
         tags: project.tags,
       },
@@ -88,8 +88,8 @@ export default function ProjectForm({
         title: project.title,
         slug,
         description: project.description,
-        live_url: `https://${project.live_url}`,
-        github_url: `https://${project.github_url}`,
+        live_url: `https://${project.live_url?.replace(/^https?:\/\//, "") ?? ""}`,
+        github_url: `https://${project.github_url?.replace(/^https?:\/\//, "") ?? ""}`,
         is_featured: initialData?.is_featured ?? false,
         tags: project.tags,
       },
@@ -220,7 +220,7 @@ export default function ProjectForm({
                 <InputGroup>
                   <InputGroupInput
                     id="project-url"
-                    value={project?.live_url ?? ""}
+                    value={project.live_url?.replace(/^https?:\/\//, "") ?? ""}
                     placeholder="example.com"
                     onChange={(e) =>
                       handleOnChangeInput("live_url", e.target.value)
@@ -243,7 +243,9 @@ export default function ProjectForm({
                     }
                     id="github-url"
                     placeholder="example.com"
-                    value={project?.github_url ?? ""}
+                    value={
+                      project?.github_url?.replace(/^https?:\/\//, "") ?? ""
+                    }
                   />
                   <InputGroupAddon>
                     <InputGroupText>https://</InputGroupText>

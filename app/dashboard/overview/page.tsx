@@ -20,7 +20,7 @@ export default function Page() {
           title="overview"
           subtitle="Manage your digital showcase and track project performance."
         />
-        <div className="place-items-center md:place-items-baseline grid md:grid-cols-2 lg:grid-cols-3 gap-5 ">
+        <div className="place-items-center md:place-items-start grid md:grid-cols-2 lg:grid-cols-3 gap-5 ">
           {projects.map((project) => (
             <ProjectCard key={project.id} data={project} />
           ))}
