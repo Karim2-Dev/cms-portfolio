@@ -1,4 +1,4 @@
-import { AlertDialogDestructive } from "../AlertSubmitting";
+import { AlertDialogDestructive } from "../../../../components/AlertSubmitting";
 import { useAdminStore } from "@/src/store/projectsStore";
 import { toast } from "sonner";
 

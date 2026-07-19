@@ -4,7 +4,7 @@ import Link from "next/link";
 import { HiPlus } from "react-icons/hi2";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import ProjectForm from "../projectcard/ProjectForm";
+import ProjectForm from "../../app/dashboard/manage-projects/components/ProjectForm";
 export default function MobileNav() {
   const pathname = usePathname();
   const currentPath = pathname.split("/")[2];

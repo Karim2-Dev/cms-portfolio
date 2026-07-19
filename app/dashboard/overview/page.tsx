@@ -1,8 +1,8 @@
 "use client";
 import HeadingPage from "@/components/HeadingPage";
-import AddProjectCard from "@/components/projectcard/AddProjectCard";
-import ProjectCard from "@/components/projectcard/ProjectCard";
-import SkeletonProjectCard from "@/components/projectcard/SkeletonProjectCard";
+import AddProjectCard from "@/app/dashboard/manage-projects/components/AddProjectCard";
+import ProjectCard from "@/app/dashboard/manage-projects/components/ProjectCard";
+import SkeletonProjectCard from "@/app/dashboard/manage-projects/components/SkeletonProjectCard";
 
 import { useAdminStore } from "@/src/store/projectsStore";
 import { useEffect } from "react";

@@ -1,7 +1,7 @@
 "use client";
 import { HiMiniPlusSmall } from "react-icons/hi2";
 import { useState } from "react";
-import ProjectForm from "../projectcard/ProjectForm";
+import ProjectForm from "../../app/dashboard/manage-projects/components/ProjectForm";
 
 export default function AddProjectBtn() {
   const [isOpen, setIsOpen] = useState(false);

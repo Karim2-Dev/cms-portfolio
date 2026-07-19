@@ -2,8 +2,8 @@
 
 "use client";
 import { IoClose } from "react-icons/io5";
-import { Field, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
+import { Field, FieldGroup, FieldLabel } from "../../../../components/ui/field";
+import { Input } from "../../../../components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { InputTags } from "@/components/base/input/input-tags";
 import { Controller } from "react-hook-form";

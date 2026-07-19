@@ -10,27 +10,35 @@ import DeleteProject from "./DeleteProject";
 
 export default function ProjectCard({ data }: { data: Project }) {
   const [isOpenEditForm, setIsOpenEditForm] = useState<boolean>(false);
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
   return (
     <div className="project-card bg-surface border border-border w-full flex flex-col justify-between min-h-[460px] rounded-md overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 bg-background-secondary dark:bg-background-secondary-dark">
       {/* 📸 جزء الصورة بعد فك التعليق وتعديل الـ Classes */}
       <div className="img-wrapper border-b-2 border-border relative h-56 w-full overflow-hidden bg-muted">
         {data.thumbnail ? (
-          <Image
-            src={data.thumbnail}
-            alt={data.title || "Project thumbnail"}
-            fill // 👈 بيخلي الصورة تملا الـ wrapper بالكامل تلقائياً بشكل متجاوب
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover hover:scale-110 transition-all duration-300" // 👈 object-cover بيمنع تمطيط الصورة
-            priority={false}
-          />
+          <>
+            {/* Skeleton overlay - بيظهر لحد ما الصورة تحمّل */}
+            {isImageLoading && (
+              <div className="absolute inset-0 animate-pulse bg-muted" />
+            )}
+            <Image
+              src={data.thumbnail}
+              alt={data.title || "Project thumbnail"}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className={`object-cover hover:scale-110 transition-all duration-300 ${
+                isImageLoading ? "opacity-0" : "opacity-100"
+              }`}
+              priority={false}
+              onLoad={() => setIsImageLoading(false)}
+            />
+          </>
         ) : (
-          // لو مفيش صورة للمشروع يعرض بليس هولدر شيك
           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
             No Image Available
           </div>
         )}
       </div>
-
       {/* 📝 محتوى الكارت */}
       <div className="px-3 py-5 flex flex-col gap-5 flex-grow justify-between">
         <div className="space-y-3">

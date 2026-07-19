@@ -15,8 +15,10 @@ export const useAdminStore = create<ProjectStore>((set, get) => ({
   projects: [],
   isLoading: false,
   error: null,
+  hasFetched: false,
 
   fetchProjects: async () => {
+    if (get().hasFetched || get().isLoading) return;
     set({ isLoading: true, error: null });
 
     const { data, error } = await supabase
@@ -27,7 +29,7 @@ export const useAdminStore = create<ProjectStore>((set, get) => ({
     if (error) {
       set({ error: error.message, isLoading: false });
     } else {
-      set({ projects: data as Project[], isLoading: false });
+      set({ projects: data as Project[], isLoading: false, hasFetched: true });
     }
   },
 

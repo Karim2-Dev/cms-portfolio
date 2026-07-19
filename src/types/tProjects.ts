@@ -22,7 +22,7 @@ export interface ProjectStore {
   projects: Project[];
   isLoading: boolean;
   error: string | null;
-
+  hasFetched: boolean;
   // Read
   fetchProjects: () => Promise<void>;
 
