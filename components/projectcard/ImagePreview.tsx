@@ -5,7 +5,7 @@ export default function ImagePreview({
   img = "",
   onRemove,
 }: {
-  img: string;
+  img: string | null;
   onRemove?: () => void;
 }) {
   if (!img) return null;

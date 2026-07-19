@@ -8,7 +8,7 @@ export interface Project {
   github_url?: string;
   is_featured: boolean;
   created_at: string;
-  tags?: string[];
+  tags: string[];
 }
 
 // شكل الـ response الموحّد لعمليات الكتابة (add/edit/delete)
@@ -45,7 +45,3 @@ export interface ProjectStore {
   // Delete
   deleteProject: (projectId: string) => Promise<CrudResult>;
 }
-export type ProjectFormData = Omit<
-  Project,
-  "id" | "slug" | "content" | "created_at" | "is_featured"
->;

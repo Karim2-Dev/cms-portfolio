@@ -1,10 +1,12 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/incompatible-library */
+
 "use client";
 import { IoClose } from "react-icons/io5";
 import { Field, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { InputTags } from "@/components/base/input/input-tags";
+import { Controller } from "react-hook-form";
 import { useAdminStore } from "@/src/store/projectsStore";
 
 import {
@@ -17,8 +19,13 @@ import { InfoIcon, Loader2Icon } from "lucide-react";
 import AddThumbnail from "./AddThumbnail";
 import { useEffect, useState } from "react";
 import ImagePreview from "./ImagePreview";
-import { ProjectFormData } from "@/src/types/tProjects";
+import { Project } from "@/src/types/tProjects";
 import { ProjectFormProps } from "@/src/types/tsProjectForm";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { projectFormData, projectSchema } from "@/lib/schemas/project-schema";
+import ErrorMsg from "@/components/ErrorMsg";
+import { toast } from "sonner";
 
 export default function ProjectForm({
   isOpen,
@@ -26,113 +33,131 @@ export default function ProjectForm({
   initialData,
   mode,
 }: ProjectFormProps) {
-  const [image, setImage] = useState<File | null>(null);
-  const [project, setProject] = useState<Partial<ProjectFormData>>(
-    initialData ?? {},
-  );
   const {
     addProject,
     editProject: editProjectStore,
     isLoading,
   } = useAdminStore();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    initialData?.thumbnail ?? null,
+  );
+
+  const {
+    getValues,
+    formState: { errors },
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    control,
+    reset,
+  } = useForm<projectFormData>({
+    resolver: zodResolver(projectSchema),
+    mode: "onChange",
+    defaultValues: {
+      title: initialData?.title ?? "",
+      description: initialData?.description ?? "",
+      tags: initialData?.tags ?? [],
+      "github-url": initialData?.github_url?.replace(/^https?:\/\//, "") ?? "",
+      "live-url": initialData?.live_url?.replace(/^https?:\/\//, "") ?? "",
+      image: undefined,
+    },
+  });
+  const image = watch("image");
 
   // Handles
   const handleCancelBtn = () => {
-    setProject({});
+    reset();
     setIsOpen(false);
-    setImage(null);
   };
   const handleRemoveImage = () => {
-    setImage(null);
-    setProject((prev) => ({ ...prev, thumbnail: "" }));
+    setValue("image", undefined);
+    setPreviewUrl(null);
   };
-  async function addNewProject() {
-    if (!project?.title || project.title.trim() === "") {
+
+  async function onSubmit(data: projectFormData) {
+    if (!data?.title || data.title.trim() === "") {
       return;
     }
-    const slug = project.title
+
+    const slug = data.title
       .trim()
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^\w-]+/g, "");
 
-    const result = await addProject(
-      {
-        title: project.title,
-        slug,
-        description: project.description,
-        live_url: `https://${project.live_url?.replace(/^https?:\/\//, "") ?? ""}`,
-        github_url: `https://${project.github_url?.replace(/^https?:\/\//, "") ?? ""}`,
-        is_featured: false,
-        tags: project.tags,
-      },
-      image,
-    );
-    if (result.success) {
-      handleCancelBtn();
-    } else {
-      console.error(result.error);
-      // ممكن تعرض toast/error state هنا لاحقًا
-    }
-  }
-  async function editProject() {
-    if (!project?.title || project.title.trim() === "") return;
-    const slug = project.title
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "-")
-      .replace(/[^\w-]+/g, "");
+    const imageFile = getValues("image");
 
-    const result = await editProjectStore(
-      {
-        title: project.title,
-        slug,
-        description: project.description,
-        live_url: `https://${project.live_url?.replace(/^https?:\/\//, "") ?? ""}`,
-        github_url: `https://${project.github_url?.replace(/^https?:\/\//, "") ?? ""}`,
-        is_featured: initialData?.is_featured ?? false,
-        tags: project.tags,
-      },
-      image,
-      initialData?.id ?? "",
-    );
-    if (result.success) {
-      handleCancelBtn();
-    } else {
-      console.error(result.error);
-      // ممكن تعرض toast/error state هنا لاحقًا
-    }
-  }
+    const payload: Omit<Project, "id" | "created_at" | "thumbnail"> = {
+      title: data.title,
+      slug,
+      description: data.description,
+      live_url: `https://${data["live-url"]?.replace(/^https?:\/\//, "") ?? ""}`,
+      github_url: `https://${data["github-url"]?.replace(/^https?:\/\//, "") ?? ""}`,
+      is_featured: initialData?.is_featured ?? false,
+      tags: data.tags,
+    };
 
-  async function handleSaveBtn() {
     if (mode === "add") {
-      addNewProject();
-    } else if (mode === "edit") {
-      editProject();
+      const result = await addProject(payload, imageFile as File);
+      if (result.success) {
+        handleCancelBtn();
+        toast.success("Project added successfully", {
+          description: "The project has been added to the database.",
+          position: "top-center",
+        });
+      } else {
+        toast.error("Failed to add project", {
+          description: "The project could not be added to the database.",
+          position: "top-center",
+        });
+      }
+    } else {
+      const result = await editProjectStore(
+        payload,
+        imageFile as File,
+        initialData?.id ?? "",
+      );
+      if (result.success) {
+        handleCancelBtn();
+        toast.success("Project edited successfully", {
+          description: "The project has been updated in the database.",
+          position: "top-center",
+        });
+      } else {
+        toast.error("Failed to edit project", {
+          description: "The project could not be updated in the database.",
+          position: "top-center",
+        });
+      }
     }
   }
 
-  function handleOnChangeInput<K extends keyof ProjectFormData>(
-    key: K,
-    value: ProjectFormData[K],
-  ) {
-    setProject((prev) => ({ ...prev, [key]: value }));
-  }
   //UseEffects
   useEffect(() => {
     if (isOpen) {
-      setProject(initialData ?? {});
-      setImage(null);
+      reset({
+        title: initialData?.title ?? "",
+        description: initialData?.description ?? "",
+        tags: initialData?.tags ?? [],
+        "github-url":
+          initialData?.github_url?.replace(/^https?:\/\//, "") ?? "",
+        "live-url": initialData?.live_url?.replace(/^https?:\/\//, "") ?? "",
+        image: undefined,
+      });
+      setPreviewUrl(initialData?.thumbnail ?? null);
     }
-  }, [isOpen, initialData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, initialData?.id, reset]);
 
   useEffect(() => {
-    if (image) {
+    if (image instanceof File) {
       const url = URL.createObjectURL(image);
-      handleOnChangeInput("thumbnail", url);
+      setPreviewUrl(url);
       return () => URL.revokeObjectURL(url);
     }
   }, [image]);
+
   return (
     <div
       className={`fixed inset-0 z-100 flex items-center justify-center py-5 px-3
@@ -146,7 +171,8 @@ export default function ProjectForm({
       />
 
       {/* Modal - عنصر منفصل، أنيميشن دخول حقيقي (scale + translate + opacity) */}
-      <div
+      <form
+        onSubmit={handleSubmit(onSubmit)}
         className={`relative container bg-surface w-100 border border-border rounded-lg md:w-185 max-h-[85vh] flex flex-col
           transition-all duration-300 ease-out
           ${
@@ -169,6 +195,7 @@ export default function ProjectForm({
             </div>
 
             <button
+              type="button"
               onClick={() => setIsOpen(false)}
               className="flex cursor-pointer items-center justify-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
             >
@@ -182,36 +209,44 @@ export default function ProjectForm({
             <Field>
               <FieldLabel htmlFor="title">Project Title</FieldLabel>
               <Input
-                value={project?.title ?? ""}
-                onChange={(e) => handleOnChangeInput("title", e.target.value)}
+                aria-invalid={!!errors.title}
+                {...register("title")}
                 id="title"
                 autoComplete="off"
                 placeholder="e.g., Quantum Portflio v2.0"
               />
+              <ErrorMsg message={errors.title?.message} />
             </Field>
             <Field>
               <FieldLabel htmlFor="description">Description</FieldLabel>
               <Textarea
-                onChange={(e) =>
-                  handleOnChangeInput("description", e.target.value)
-                }
+                aria-invalid={!!errors.description}
                 minLength={3}
-                value={project?.description ?? ""}
                 maxLength={1000}
                 id="description"
+                {...register("description")}
                 autoComplete="off"
                 placeholder=" A brief description of the project, highlighting its key features and purpose."
               ></Textarea>
+              <ErrorMsg message={errors.description?.message} />
             </Field>
             <Field>
-              <InputTags
-                onChange={(tags) => handleOnChangeInput("tags", tags)}
-                className="w-full"
-                value={project?.tags ?? []}
-                isRequired
-                label="Technologies"
-                placeholder="e.g., React, Node.js, Tailwind CSS"
+              <Controller
+                name="tags"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <InputTags
+                    className="w-full"
+                    value={field.value ?? []}
+                    onChange={field.onChange}
+                    isRequired
+                    label="Technologies"
+                    placeholder="e.g., React, Node.js, Tailwind CSS"
+                    isInvalid={!!fieldState.error}
+                  />
+                )}
               />
+              <ErrorMsg message={errors.tags?.message} />
             </Field>
 
             <div className="flex flex-col md:flex-row w-full justify-between gap-2 ">
@@ -219,12 +254,10 @@ export default function ProjectForm({
                 <FieldLabel htmlFor="project-url">Project URL</FieldLabel>
                 <InputGroup>
                   <InputGroupInput
+                    aria-invalid={!!errors["live-url"]}
+                    {...register("live-url")}
                     id="project-url"
-                    value={project.live_url?.replace(/^https?:\/\//, "") ?? ""}
                     placeholder="example.com"
-                    onChange={(e) =>
-                      handleOnChangeInput("live_url", e.target.value)
-                    }
                   />
                   <InputGroupAddon>
                     <InputGroupText>https://</InputGroupText>
@@ -233,19 +266,16 @@ export default function ProjectForm({
                     <InfoIcon />
                   </InputGroupAddon>
                 </InputGroup>
+                <ErrorMsg message={errors["live-url"]?.message} />
               </Field>
               <Field>
                 <FieldLabel htmlFor="github-url">GitHub URL</FieldLabel>
                 <InputGroup>
                   <InputGroupInput
-                    onChange={(e) =>
-                      handleOnChangeInput("github_url", e.target.value)
-                    }
+                    aria-invalid={!!errors["github-url"]}
+                    {...register("github-url")}
                     id="github-url"
                     placeholder="example.com"
-                    value={
-                      project?.github_url?.replace(/^https?:\/\//, "") ?? ""
-                    }
                   />
                   <InputGroupAddon>
                     <InputGroupText>https://</InputGroupText>
@@ -254,17 +284,18 @@ export default function ProjectForm({
                     <InfoIcon />
                   </InputGroupAddon>
                 </InputGroup>
+                <ErrorMsg message={errors["github-url"]?.message} />
               </Field>
             </div>
 
-            {project?.thumbnail ? (
-              <ImagePreview
-                img={project.thumbnail}
-                onRemove={handleRemoveImage}
-              />
+            {previewUrl ? (
+              <ImagePreview img={previewUrl} onRemove={handleRemoveImage} />
             ) : (
-              <AddThumbnail setImage={setImage} />
+              <AddThumbnail
+                setImage={(file) => setValue("image", file as File)}
+              />
             )}
+            <ErrorMsg message={errors.image?.message} />
           </FieldGroup>
         </div>
 
@@ -273,18 +304,23 @@ export default function ProjectForm({
           className="text-md bottom border-t bg-surface py-5 px-3 w-full absolute left-0 bottom-0 flex items-center gap-5 flex-shrink-0 z-10"
         >
           <button
-            onClick={handleSaveBtn}
             disabled={isLoading}
+            type="submit"
             className="text-white dark:text-gray-900 btn bg-primary transition-transform py-1.5 px-4 rounded-md cursor-pointer scale-100 hover:scale-95 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
           >
             {isLoading && <Loader2Icon className="w-4 h-4 animate-spin" />}
             Save Project
           </button>
-          <button className="btn cursor-pointer" onClick={handleCancelBtn}>
+          <button
+            disabled={isLoading}
+            type="button"
+            className="btn cursor-pointer"
+            onClick={handleCancelBtn}
+          >
             Cancel
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

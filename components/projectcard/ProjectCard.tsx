@@ -10,8 +10,6 @@ import DeleteProject from "./DeleteProject";
 
 export default function ProjectCard({ data }: { data: Project }) {
   const [isOpenEditForm, setIsOpenEditForm] = useState<boolean>(false);
-
-  console.log(data.live_url);
   return (
     <div className="project-card bg-surface border border-border w-full flex flex-col justify-between min-h-[460px] rounded-md overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 bg-background-secondary dark:bg-background-secondary-dark">
       {/* 📸 جزء الصورة بعد فك التعليق وتعديل الـ Classes */}

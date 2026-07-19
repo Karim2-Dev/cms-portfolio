@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldError,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { useUser } from "@clerk/nextjs";
 import { Controller } from "react-hook-form";
 import {
@@ -22,7 +17,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { ProfileFormData, profileSchema } from "@/lib/schemas/profile-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ErrorMsg from "./ErrorMsg";
+import ErrorMsg from "../../../../components/ErrorMsg";
 import { AlertDestructive } from "@/components/ErrorAlert";
 
 export default function ProfileForm() {
@@ -41,7 +36,6 @@ export default function ProfileForm() {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     mode: "onBlur",
-
     values: {
       fullName: user?.fullName || "",
       email: user?.emailAddresses[0].emailAddress || "",

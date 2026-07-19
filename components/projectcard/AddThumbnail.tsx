@@ -13,6 +13,7 @@ export default function AddThumbnail({
         <h2>Click to upload or drag and drop</h2>
         <p>PNG,JPG, or WEBP up To 5MB</p>
         <input
+          accept=".png,.jpg,.jpeg,.webp"
           type="file"
           className="absolute h-full opacity-0 w-full "
           onChange={(e) => {
